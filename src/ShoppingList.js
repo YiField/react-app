@@ -1,4 +1,3 @@
-
 import React from 'react';
 class ShoppingList extends React.Component {
   render() {
@@ -11,6 +10,6 @@ class ShoppingList extends React.Component {
           <li>oculus</li>
         </ul>
       </div>
-    )
+    );
   }
 }

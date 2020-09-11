@@ -25,10 +25,20 @@ ol, ul {
   border: 1px solid red;
 }
 .list-btn {
+  display: inline-block;
+  width: 150px;
   height: 30px;
   line-height: 30px;
   padding: 0 10px;
+  text-align: center;
   background: #dedede;
   border: 1px solid #777;
   border-radius: 5px;
+}
+.info {
+  display: inline-block;
+  margin-left: 10px;
+}
+.li-item {
+  margin: 10px 0;
 }
