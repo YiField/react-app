@@ -22,7 +22,7 @@ ol, ul {
   margin-left: 20px;
 }
 .isActive {
-  border: 1px solid red;
+  font-weight: 700;
 }
 .list-btn {
   display: inline-block;

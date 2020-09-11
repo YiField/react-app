@@ -2,13 +2,36 @@ import React from 'react';
 import Square from './Square';
 /*棋盘*/
 class Board extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      chess: [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+      ],
+    };
+  }
   renderSquare(i) {
-    return <Square value={this.props.squares[i]} clickHandler={() => this.props.onClick(i)} />;
+    return (
+      <Square value={this.props.squares[i]} clickHandler={() => this.props.onClick(i)} key={i} />
+    );
   }
   render() {
+    //使用循环
+    const chesses = this.state.chess.map((chessRow, index) => {
+      return (
+        <div key={index}>
+          {chessRow.map((chess) => {
+            return this.renderSquare(chess);
+          })}
+        </div>
+      );
+    });
     return (
       <div>
-        <div className="board-row">
+        {chesses}
+        {/* <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
           {this.renderSquare(2)}
@@ -22,7 +45,7 @@ class Board extends React.Component {
           {this.renderSquare(6)}
           {this.renderSquare(7)}
           {this.renderSquare(8)}
-        </div>
+        </div> */}
       </div>
     );
   }

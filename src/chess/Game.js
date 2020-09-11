@@ -1,121 +1,137 @@
-import React from 'react'
+import React from 'react';
 import Board from './Board';
-import './game.css'
+import './game.css';
 class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       //历史步骤
-      history: [{
-        squares: Array(9).fill(null)
-      }],
+      history: [
+        {
+          squares: Array(9).fill(null),
+        },
+      ],
       xIsNext: true,
       //步数
       stepNumber: 0,
-      chessIdx: []
-    }
+      chessIdx: [],
+      historyPosition: [],
+    };
   }
   jumpTo(step) {
     this.setState({
       stepNumber: step,
-      xIsNext: (step % 2) === 0,
-    })
+      xIsNext: step % 2 === 0,
+    });
   }
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-    let info;
-    if (this.state.chessIdx.length === 2) {
-      info = 'current position :(' + this.state.chessIdx[0] + ', ' + this.state.chessIdx[1] + ')'
-    } else {
-      info = ''
-    }
-
     const moves = history.map((step, move) => {
       const desc = move ? 'Go to move #' + move : 'Go to game start';
-      return ( <
-        li key = {
-          move
-        }
-        className = {
-          move === this.state.stepNumber ? 'isActive' : null,
-          'li-item'
-        } >
-        <
-        div className = "list-btn"
-        onClick = {
-          () => this.jumpTo(move)
-        } > {
-          desc
-        } < /div> <
-        div className = "info" > {
-          info
-        } < /div> <
-        /li>
-      )
-    })
+      return (
+        <li
+          key={move}
+          className={(move === this.state.stepNumber ? 'isActive' : null) + ' li-item'}>
+          <div className="list-btn" onClick={() => this.jumpTo(move)}>
+            {desc}
+          </div>
+          <div className="info">
+            {move !== 0
+              ? 'current position:(' +
+                this.state.historyPosition[move - 1][0] +
+                ', ' +
+                this.state.historyPosition[move - 1][1] +
+                ')'
+              : ''}
+          </div>
+        </li>
+      );
+    });
 
     let status;
     if (winner) {
       status = 'Step:' + this.state.stepNumber + ', Winner: ' + winner;
     } else {
-      status = 'Step:' + this.state.stepNumber + ', Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      status =
+        'Step:' + this.state.stepNumber + ', Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
-    return ( <
-      div className = "game" >
-      <
-      div className = "game-board" >
-      <
-      Board squares = {
-        current.squares
-      }
-      onClick = {
-        (i) => this.handleClick(i)
-      } > < /Board> <
-      /div> <
-      div className = "game-info" >
-      <
-      div > {
-        status
-      } < /div> <
-      ol >
-      <
-      div className = "btn" > {
-        moves
-      } < /div> <
-      /ol> <
-      /div> <
-      /div>
-    )
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board squares={current.squares} onClick={(i) => this.handleClick(i)}></Board>
+        </div>
+        <div className="game-info">
+          <div> {status} </div>
+          <span
+            className="info-btn"
+            onClick={() => {
+              this.sortHistory();
+            }}>
+            生序
+          </span>
+          <span
+            className="info-btn"
+            onClick={() => {
+              this.sortHistory(-1);
+            }}>
+            降序
+          </span>
+          <ol>
+            <div className="btn"> {moves} </div>
+          </ol>
+        </div>
+      </div>
+    );
+  }
+  sortHistory(dir) {
+    if (!dir) dir = 1; //默认生序
+    console.log(dir)
+    let h = this.state.history.slice();
+    let hp = this.state.historyPosition.slice();
+   let h1= h.sort((a, b) => dir * (a - b));
+    let hp1=hp.sort((a, b) => dir * (a - b));
+    console.log('h,',h1)
+    this.setState({
+      history:h1,
+      historyPosition: this.state.historyPosition.slice().sort((a, b) => dir * (a - b)),
+    });
+    // console.log(this.state.history)
+    // console.log(this.state.historyPosition)
   }
   handleClick(i) {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const squares = current.squares.slice();
-    const column = i % 3 + 1;
-    const row = Math.ceil((i + 1) / 3);
-    this.setState({
-      chessIdx: [row, column]
-    });
+
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     //判断是否游戏结束
     squares[i] = this.state.xIsNext ? 'X' : 'O';
+    let p = this.state.historyPosition.slice(0);
+    const column = (i % 3) + 1;
+    const row = Math.ceil((i + 1) / 3);
+    let position = [row, column];
+    p.push(position);
     this.setState({
-      history: history.concat([{
-        squares: squares
-      }]),
+      history: history.concat([
+        {
+          squares: squares,
+        },
+      ]),
       xIsNext: !this.state.xIsNext,
-      stepNumber: history.length
-    })
+      stepNumber: history.length,
+      historyPosition: p,
+    });
   }
 }
 
 function calculateWinner(squares) {
-  const lines = [ //能连成线的
+  const lines = [
+    //能连成线的
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -133,4 +149,4 @@ function calculateWinner(squares) {
   }
   return null;
 }
-export default Game
+export default Game;
