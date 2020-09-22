@@ -16,6 +16,8 @@ class Game extends React.Component {
       stepNumber: 0,
       chessIdx: [],
       historyPosition: [],
+      listDirection: 1,//1正序 -1:逆序
+      winnerIdx:[]
     };
   }
   jumpTo(step) {
@@ -28,12 +30,23 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
+    let status;
+    if (winner && winner.length === 2) {
+      status = 'Step:' + this.state.stepNumber + ', Winner: ' + winner[0];
+      console.log('winner index is: ' + winner[1])
+      this.winnerIdx = winner[1];
+    } else {
+      status =
+        'Step:' + this.state.stepNumber + ', Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
     const moves = history.map((step, move) => {
       const desc = move ? 'Go to move #' + move : 'Go to game start';
+      const winnerIdx = this.winnerIdx && this.winnerIdx.length === 3;
+
       return (
         <li
           key={move}
-          className={(move === this.state.stepNumber ? 'isActive' : null) + ' li-item'}>
+          className={(move === this.state.stepNumber ? 'isActive' : null) + ' li-item '}>
           <div className="list-btn" onClick={() => this.jumpTo(move)}>
             {desc}
           </div>
@@ -50,13 +63,7 @@ class Game extends React.Component {
       );
     });
 
-    let status;
-    if (winner) {
-      status = 'Step:' + this.state.stepNumber + ', Winner: ' + winner;
-    } else {
-      status =
-        'Step:' + this.state.stepNumber + ', Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    }
+
 
     return (
       <div className="game">
@@ -80,7 +87,7 @@ class Game extends React.Component {
             降序
           </span>
           <ol>
-            <div className="btn"> {moves} </div>
+            <div className="btn"> {this.state.listDirection === 1 ? moves : moves.reverse()} </div>
           </ol>
         </div>
       </div>
@@ -88,16 +95,10 @@ class Game extends React.Component {
   }
   sortHistory(dir) {
     if (!dir) dir = 1; //默认生序
-    console.log(dir)
-    let h = this.state.history.slice();
-    let hp = this.state.historyPosition.slice();
-   let h1= h.sort((a, b) => dir * (a - b));
-    let hp1=hp.sort((a, b) => dir * (a - b));
-    console.log('h,',h1)
+    console.log(dir);
     this.setState({
-      history:h1,
-      historyPosition: this.state.historyPosition.slice().sort((a, b) => dir * (a - b)),
-    });
+      listDirection : dir
+    })
     // console.log(this.state.history)
     // console.log(this.state.historyPosition)
   }
@@ -144,7 +145,9 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      //win
+      console.log('lines: ',lines[i])
+      return [squares[a],lines[i]];
     }
   }
   return null;
