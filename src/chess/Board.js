@@ -14,8 +14,19 @@ class Board extends React.Component {
   }
   renderSquare(i) {
     return (
-      <Square value={this.props.squares[i]} clickHandler={() => this.props.onClick(i)} key={i} />
+      <Square
+        value={this.props.squares[i]}
+        clickHandler={() => this.props.onClick(i)}
+        key={i}
+        isWinner={this.checkIsWinner(this.props.winners, i)}
+      />
     );
+  }
+  checkIsWinner(winners, i) {
+    if (winners && winners.length) {
+      if (winners.indexOf(i) !== -1) return true;
+    }
+    return false;
   }
   render() {
     //使用循环

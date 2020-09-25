@@ -13,6 +13,10 @@
   border: 1px solid #999;
 }
 
+.square.win {
+  color: red;
+}
+
 .square:focus {
   outline: none;
 }
